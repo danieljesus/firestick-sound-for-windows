@@ -44,9 +44,19 @@ The receiver must be running for audio to reach the PC. It reconnects automatica
 ## Usage
 
 ```
-firestick-sound.exe [name-filter]    Receive audio from paired sources (optionally only those whose name contains name-filter)
-firestick-sound.exe --restart-radio  Turn Bluetooth off and on (no admin needed)
+firestick-sound.exe [name-filter] [--log <file>]  Receive audio from paired sources (optionally only those whose name contains name-filter)
+firestick-sound.exe --restart-radio               Turn Bluetooth off and on (no admin needed)
 ```
+
+## Start with Windows
+
+```powershell
+.\install-startup.ps1              # publish to %LOCALAPPDATA%\Programs\firestick-sound and start hidden at logon
+.\install-startup.ps1 -Filter tv   # only accept sources whose name contains "tv" (default: "fire")
+.\install-startup.ps1 -Uninstall
+```
+
+It runs without a window and logs to `%LOCALAPPDATA%\Programs\firestick-sound\firestick-sound.log`. No admin needed: it uses the per-user `Run` registry key.
 
 ## Reverting
 

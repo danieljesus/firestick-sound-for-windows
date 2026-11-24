@@ -15,11 +15,23 @@ if (args.FirstOrDefault() == "--restart-radio")
     return;
 }
 
-var filter = args.FirstOrDefault()?.ToLowerInvariant();
+var logIndex = Array.IndexOf(args, "--log");
+var logFile = logIndex >= 0 && logIndex + 1 < args.Length ? args[logIndex + 1] : null;
+var filter = args.Where((a, i) => logIndex < 0 || (i != logIndex && i != logIndex + 1)).FirstOrDefault()?.ToLowerInvariant();
 var connections = new ConcurrentDictionary<string, AudioPlaybackConnection>();
 var names = new ConcurrentDictionary<string, string>();
+var logLock = new object();
 
-void Log(string msg) => Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {msg}");
+void Log(string msg)
+{
+    var line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {msg}";
+    Console.WriteLine(line);
+    if (logFile is null) return;
+    lock (logLock)
+    {
+        try { File.AppendAllText(logFile, line + Environment.NewLine); } catch (IOException) { }
+    }
+}
 
 async Task Connect(string id)
 {
